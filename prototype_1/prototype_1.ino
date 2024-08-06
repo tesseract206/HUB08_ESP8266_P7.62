@@ -3,6 +3,8 @@
 //library sendiri nih boss
 
 //pin
+char texT[] = "0";
+
 #define P_R1 5   // Red data
 #define P_G1 4   // Green data
 #define P_R2 0   //R2
@@ -15,12 +17,15 @@
 #define P_C 3
 #define P_D 1
 
+
 uint8_t frameBufferR1[32][64 / 8] = {0}; // Buffer for R1
 uint8_t frameBufferR2[32][64 / 8] = {0}; // Buffer for R2
 
 void setup() {
   pinMode(P_R1, OUTPUT);
   pinMode(P_G1, OUTPUT);
+  pinMode(P_R2, OUTPUT);
+  pinMode(P_G2, OUTPUT);
   pinMode(P_CLK, OUTPUT);
   pinMode(P_LAT, OUTPUT);
   pinMode(P_OE, OUTPUT);
@@ -28,7 +33,8 @@ void setup() {
   pinMode(P_B, OUTPUT);
   pinMode(P_C, OUTPUT);
   pinMode(P_D, OUTPUT);
-  memset(frameBuffer, 0, sizeof(frameBuffer));
+  memset(frameBufferR1, 0, sizeof(frameBufferR1));
+  memset(frameBufferR2, 0, sizeof(frameBufferR2));
 }
 void setPixel1(int x, int y, bool on) {
   if (x < 0 || x >= 64 || y < 0 || y >= 32) return; // Check bounds
@@ -60,17 +66,37 @@ void drawChar(int x, int y, char c) {
   int charIndex = c - '0'; // Calculate index
   //i<besar font
   for (int i = 0; i < 8; i++) {
-    uint8_t colData = font8x16_0[charIndex][i];
+    uint8_t colData = number0_up[charIndex][i];
 
     for (int j = 0; j < 8; j++) {
-      setPixel(x + i, y + j, colData & (1 << j));
+      setPixel1(x + i, y + j, colData & (1 << j));
+    }
+  }
+}
+void drawChar1(int x, int y, char c) {
+  if (c < '0' || c > '9') return; // Only handle numbers 0-9
+
+  int charIndex = c - '0'; // Calculate index
+  //i<besar font
+  for (int i = 0; i < 8; i++) {
+    uint8_t colData = number0_dw[charIndex][i];
+
+    for (int j = 0; j < 8; j++) {
+      setPixel2(x + i, y + j, colData & (1 << j));
     }
   }
 }
 void displayText(const char* text, int x, int y) {
   while (*text) {
     drawChar(x, y, *text);
-    x += 9; // Move to the next character position disesuaikan besar font
+    x += 6; // Move to the next character position disesuaikan besar font
+    text++;
+  }
+}
+void displayText1(const char* text, int x, int y) {
+  while (*text) {
+    drawChar1(x, y, *text);
+    x += 6; // Move to the next character position disesuaikan besar font
     text++;
   }
 }
@@ -92,8 +118,8 @@ void updateDisplay() {
       for (int bit = 0; bit < 8; bit++) {
         digitalWrite(P_R1, (redData1 >> bit) & 0x01); // Set red
         digitalWrite(P_G1, (greenData1 >> bit) & 0x00); // Set green
-        digitalWrite(P_R2, (redData2 >> bit) & 0x00);
-        digitalWrite(P_G2, (greenData2 >> bit) & 0x01); // Set green
+        digitalWrite(P_R2, (redData2 >> bit) & 0x01);
+        digitalWrite(P_G2, (greenData2 >> bit) & 0x00); // Set green
         digitalWrite(P_CLK, HIGH);
         delayMicroseconds(1);
         digitalWrite(P_CLK, LOW);
@@ -113,10 +139,12 @@ void updateDisplay() {
 }
 void loop() {
   // Clear the display
-  memset(frameBuffer, 0, sizeof(frameBuffer));
+  memset(frameBufferR1, 0, sizeof(frameBufferR1));
+  memset(frameBufferR2, 0, sizeof(frameBufferR2));
 
   // Display text starting at position (0, 0)
-  displayText("0", 0, 0);
+  displayText(texT, 0, 8);
+  displayText1(texT, 0, 0);
   // Update the display
   updateDisplay();
 }
