@@ -3,7 +3,7 @@
 //library sendiri nih boss
 
 //pin
-char texT[] = "0";
+char texT[] = "01";
 
 #define P_R1 5   // Red data
 #define P_G1 4   // Green data
@@ -63,7 +63,7 @@ void setPixel2(int x, int y, bool on) {
 void drawChar(int x, int y, char c) {
   if (c < '0' || c > '9') return; // Only handle numbers 0-9
 
-  int charIndex = c - '0'; // Calculate index
+  int charIndex = c - '0' + 1; // Calculate index
   //i<besar font
   for (int i = 0; i < 8; i++) {
     uint8_t colData = number0_up[charIndex][i];
@@ -76,7 +76,7 @@ void drawChar(int x, int y, char c) {
 void drawChar1(int x, int y, char c) {
   if (c < '0' || c > '9') return; // Only handle numbers 0-9
 
-  int charIndex = c - '0'; // Calculate index
+  int charIndex = c - '0'+1; // Calculate index
   //i<besar font
   for (int i = 0; i < 8; i++) {
     uint8_t colData = number0_dw[charIndex][i];
@@ -89,14 +89,14 @@ void drawChar1(int x, int y, char c) {
 void displayText(const char* text, int x, int y) {
   while (*text) {
     drawChar(x, y, *text);
-    x += 6; // Move to the next character position disesuaikan besar font
+    x += 9; // Move to the next character position disesuaikan besar font
     text++;
   }
 }
 void displayText1(const char* text, int x, int y) {
   while (*text) {
     drawChar1(x, y, *text);
-    x += 6; // Move to the next character position disesuaikan besar font
+    x += 9; // Move to the next character position disesuaikan besar font
     text++;
   }
 }
