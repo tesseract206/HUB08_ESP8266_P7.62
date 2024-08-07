@@ -3,7 +3,7 @@
 //library sendiri nih boss
 
 //pin
-char texT[] = "01";
+char texT[] = "AaBbCc";
 
 #define P_R1 5   // Red data
 #define P_G1 4   // Green data
@@ -61,9 +61,16 @@ void setPixel2(int x, int y, bool on) {
   }
 }
 void drawChar(int x, int y, char c) {
-  if (c < '0' || c > '9') return; // Only handle numbers 0-9
-
-  int charIndex = c - '0' + 1; // Calculate index
+  int charIndex;
+  if (c >= '0' && c <= '9') {
+    charIndex = c - '0'+1; // Numbers 0-9
+} else if (c >= 'A' && c <= 'Z') {
+    charIndex = c - 'A' + 11; // Letters A-Z, with 'A' mapped to 10
+} else if (c >= 'a' && c <= 'z'){
+    charIndex = c - 'a' + 38;
+} else {
+    return; // Handle non-alphanumeric characters if necessary
+} // Calculate index
   //i<besar font
   for (int i = 0; i < 8; i++) {
     uint8_t colData = number0_up[charIndex][i];
@@ -74,9 +81,16 @@ void drawChar(int x, int y, char c) {
   }
 }
 void drawChar1(int x, int y, char c) {
-  if (c < '0' || c > '9') return; // Only handle numbers 0-9
-
-  int charIndex = c - '0'+1; // Calculate index
+  int charIndex;
+  if (c >= '0' && c <= '9') {
+    charIndex = c - '0'+1; // Numbers 0-9
+} else if (c >= 'A' && c <= 'Z') {
+    charIndex = c - 'A' + 11; // Letters A-Z, with 'A' mapped to 10
+} else if (c >= 'a' && c <= 'z'){
+    charIndex = c - 'a' + 37;
+} else {
+    return; // Handle non-alphanumeric characters if necessary
+} // Calculate index
   //i<besar font
   for (int i = 0; i < 8; i++) {
     uint8_t colData = number0_dw[charIndex][i];
@@ -89,14 +103,14 @@ void drawChar1(int x, int y, char c) {
 void displayText(const char* text, int x, int y) {
   while (*text) {
     drawChar(x, y, *text);
-    x += 9; // Move to the next character position disesuaikan besar font
+    x += 8; // Move to the next character position disesuaikan besar font
     text++;
   }
 }
 void displayText1(const char* text, int x, int y) {
   while (*text) {
     drawChar1(x, y, *text);
-    x += 9; // Move to the next character position disesuaikan besar font
+    x += 8; // Move to the next character position disesuaikan besar font
     text++;
   }
 }
@@ -117,9 +131,9 @@ void updateDisplay() {
       
       for (int bit = 0; bit < 8; bit++) {
         digitalWrite(P_R1, (redData1 >> bit) & 0x01); // Set red
-        digitalWrite(P_G1, (greenData1 >> bit) & 0x00); // Set green
-        digitalWrite(P_R2, (redData2 >> bit) & 0x01);
-        digitalWrite(P_G2, (greenData2 >> bit) & 0x00); // Set green
+        digitalWrite(P_G1, (greenData1 >> bit) & 0x01); // Set green
+        digitalWrite(P_R2, (redData2 >> bit) & 0x00);
+        digitalWrite(P_G2, (greenData2 >> bit) & 0x01); // Set green
         digitalWrite(P_CLK, HIGH);
         delayMicroseconds(1);
         digitalWrite(P_CLK, LOW);
