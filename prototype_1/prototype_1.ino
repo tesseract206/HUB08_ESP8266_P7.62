@@ -3,7 +3,6 @@
 //library sendiri nih boss
 
 //pin
-char texT[] = "AaBbCc";
 
 #define P_R1 5   // Red data
 #define P_G1 4   // Green data
@@ -67,7 +66,7 @@ void drawChar(int x, int y, char c) {
 } else if (c >= 'A' && c <= 'Z') {
     charIndex = c - 'A' + 11; // Letters A-Z, with 'A' mapped to 10
 } else if (c >= 'a' && c <= 'z'){
-    charIndex = c - 'a' + 38;
+    charIndex = c - 'a' + 37;
 } else {
     return; // Handle non-alphanumeric characters if necessary
 } // Calculate index
@@ -131,9 +130,9 @@ void updateDisplay() {
       
       for (int bit = 0; bit < 8; bit++) {
         digitalWrite(P_R1, (redData1 >> bit) & 0x01); // Set red
-        digitalWrite(P_G1, (greenData1 >> bit) & 0x01); // Set green
-        digitalWrite(P_R2, (redData2 >> bit) & 0x00);
-        digitalWrite(P_G2, (greenData2 >> bit) & 0x01); // Set green
+        digitalWrite(P_G1, (greenData1 >> bit) & 0x00); // Set green
+        digitalWrite(P_R2, (redData2 >> bit) & 0x01);
+        digitalWrite(P_G2, (greenData2 >> bit) & 0x00); // Set green
         digitalWrite(P_CLK, HIGH);
         delayMicroseconds(1);
         digitalWrite(P_CLK, LOW);
@@ -156,11 +155,20 @@ void loop() {
   memset(frameBufferR1, 0, sizeof(frameBufferR1));
   memset(frameBufferR2, 0, sizeof(frameBufferR2));
 
+  static int scrollPosition = 64;
   // Display text starting at position (0, 0)
-  displayText(texT, 0, 8);
-  displayText1(texT, 0, 0);
+  displayText(texT, scrollPosition, 8);
+  displayText1(texT, scrollPosition, 0);
+  
+
+  // Delay for scrolling speed
+  scrollPosition--;
   // Update the display
   updateDisplay();
+  if (scrollPosition < -((int)strlen(texT) * 8)) {
+    scrollPosition = 64;
+  }
+  delayMicroseconds(200);
 }
 
 
